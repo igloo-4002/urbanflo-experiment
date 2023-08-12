@@ -53,6 +53,10 @@ const useNetworkStore = create<Network>((set) => ({
     })),
 }));
 
+function exportNetwork(network: Network) {
+  console.log(network);
+}
+
 export default function App() {
   const [mode, setMode] = useState<"node" | "edge">("node");
 
@@ -121,8 +125,22 @@ export default function App() {
     );
   }
 
+  function ExportButton() {
+    return (
+      <div className="absolute top-16 left-16 items-center justify-center rounded-full flex p-4 z-10 w-48 bg-green-500">
+        <button
+          onClick={() => exportNetwork(network)}
+          className="text-white font-sans font-medium"
+        >
+          Export Network
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen w-screen items-center justify-center flex">
+      <ExportButton />
       <ModeToggle />
       <Stage
         width={window.innerWidth}
