@@ -3,6 +3,7 @@ import { Circle, Layer, Line, Stage } from "react-konva";
 import { create } from "zustand";
 import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
+import FloatingPlayPause from "./components/FloatingPlayPause"
 
 type Node = {
   id: string;
@@ -123,6 +124,7 @@ export default function App() {
 
   return (
     <div className="h-screen w-screen items-center justify-center flex">
+      <FloatingPlayPause nodes={nodes} edges={edges} />
       <ModeToggle />
       <Stage
         width={window.innerWidth}
