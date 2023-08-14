@@ -16,9 +16,20 @@ type Edge = {
   id: string;
   from: string;
   to: string;
-  priority: number;
   numLanes: number;
   speed: number;
+};
+
+type Connection = {
+  from: string;
+  to: string;
+  fromLane: number;
+  toLane: number;
+};
+
+type Route = {
+  id: string;
+  edges: string;
 };
 
 type Network = {

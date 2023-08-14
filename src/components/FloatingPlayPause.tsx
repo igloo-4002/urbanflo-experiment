@@ -37,7 +37,7 @@ const FloatingPlayPause = ({ nodes, edges }) => {
   const generateXmlEdges = (edges) => {
     // You can create your own XML structure here based on the nodes and edges data
     // For simplicity, I'll use a basic example
-    const xmlEdges = edges.map((edge) => `<edge id="${edge.id}" from="${edge.from}" to="${edge.to}" priority="${edge.priority}" numLanes="${edge.numLanes}" speed="${edge.speed}" />`);
+    const xmlEdges = edges.map((edge) => `<edge id="${edge.id}" from="${edge.from}" to="${edge.to}" numLanes="${edge.numLanes}" speed="${edge.speed}" />`);
 
     const xml = `
       <edges>
