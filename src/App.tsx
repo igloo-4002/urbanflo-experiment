@@ -16,6 +16,7 @@ type Edge = {
   id: string;
   from: string;
   to: string;
+  priority: number;
   numLanes: number;
   speed: number;
 };
