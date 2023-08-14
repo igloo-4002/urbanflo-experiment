@@ -2,7 +2,7 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { Circle, Layer, Line, Stage } from "react-konva";
 import { create } from "zustand";
 import { v4 as uuidv4 } from "uuid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FloatingPlayPause from "./components/FloatingPlayPause"
 
 type Node = {
@@ -33,16 +33,45 @@ type Route = {
   edges: string;
 };
 
+type VType = {
+  id: string; 
+  accel: number;
+  decel: number; 
+  sigma: number;
+  length: number;
+  minGap: number; 
+  maxSpeed: number;
+};
+
+type Flow = {
+  id: string;
+  type: string;
+  route: string;
+  begin: number;
+  end: number;
+  period: number;
+};
+
 type Network = {
   nodes: Record<string, Node>;
   edges: Record<string, Edge>;
+  connections: Record<string, Connection>;
+  vType: Record<string, VType>;
+  route: Record<string, Route>;
+  flow: Record<string, Flow>;
   addNode: (node: Node) => void;
   drawEdge: (from: Node, to: Node) => void;
+  addConnection: (from: Edge, to: Edge) => void;
 };
+
 
 const useNetworkStore = create<Network>((set) => ({
   nodes: {},
   edges: {},
+  connections: {},
+  vType: {},
+  route: {},
+  flow: {},
   addNode: (node) =>
     set((state) => ({
       nodes: {
@@ -63,7 +92,21 @@ const useNetworkStore = create<Network>((set) => ({
           speed: 13.89,
         },
       },
-    })),
+    }
+    
+    )),
+  addConnection: (from, to) =>
+    set((state) => ({
+      connections: {
+        ...state.connections,
+        [`${from.id}${to.id}`]: {
+          from: from.id,
+          to: to.id,
+          fromLane: 0,
+          toLane: 0,
+        },
+      }
+    }))
 }));
 
 export default function App() {
@@ -72,10 +115,40 @@ export default function App() {
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
   const network = useNetworkStore();
-  // console.log(network);
 
   const nodes = Object.values(network.nodes);
   const edges = Object.values(network.edges);
+  const connections = Object.values(network.connections);
+
+  useEffect(() => {
+    if (edges.length > 1) {
+      const lastEdge = edges[edges.length - 1];
+      const updatedConnections = [];
+  
+      for (let i = 0; i < edges.length; i++) {
+        if (lastEdge.to === edges[i].from) {
+          const fromEdge = edges[edges.length - 1];
+          const toEdge = edges[i];
+          updatedConnections.push({ from: fromEdge, to: toEdge });
+        }
+  
+        if (lastEdge.from === edges[i].to) {
+          const fromEdge = edges[i];
+          const toEdge = lastEdge;
+          updatedConnections.push({ from: fromEdge, to: toEdge });
+        }
+      }
+  
+      if (updatedConnections.length > 0) {
+        // Use your set function from useNetworkStore to update connections
+        // Example: network.addConnection(fromEdge, toEdge);
+        updatedConnections.forEach((connection) => {
+          network.addConnection(connection.from, connection.to);
+        });
+      }
+    }
+  }, [network.edges]);
+  
 
   async function onClick(event: KonvaEventObject<MouseEvent>) {
     if (mode === "node") {
@@ -136,7 +209,7 @@ export default function App() {
 
   return (
     <div className="h-screen w-screen items-center justify-center flex">
-      <FloatingPlayPause nodes={nodes} edges={edges} />
+      <FloatingPlayPause nodes={nodes} edges={edges} connections={connections}/>
       <ModeToggle />
       <Stage
         width={window.innerWidth}

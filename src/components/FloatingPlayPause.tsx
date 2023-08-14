@@ -1,16 +1,22 @@
 import React from "react";
 
-const FloatingPlayPause = ({ nodes, edges }) => {
+const FloatingPlayPause = ({ nodes, edges, connections }) => {
+    console.log(nodes)
+    console.log(edges)
+    console.log(connections)
   const handleDownload = () => {
     const xmlContentNodes = generateXmlNodes(nodes);
     const xmlContentEdges = generateXmlEdges(edges);
-    const xmlContentConnections = generateXmlConnections(edges);
+    const xmlContentConnections = generateXmlConnections(connections);
+    // const xmlContentRoutes = generateXmlRoutes(connections);
     const blobNodes = new Blob([xmlContentNodes], { type: "application/xml" });
     const blobEdges = new Blob([xmlContentEdges], { type: "application/xml" });
     const blobConnections = new Blob([xmlContentConnections], { type: "application/xml" });
+    // const blobRoutes = new Blob([xmlContentRoutes], { type: "application/xml" });
     const urlNodes = URL.createObjectURL(blobNodes);
     const urlEdges = URL.createObjectURL(blobEdges);
     const urlConnections = URL.createObjectURL(blobConnections);
+    // const urlRoutes = URL.createObjectURL(blobRoutes);
     const a = document.createElement("a");
     a.href = urlNodes;
     a.download = "t.nod.xml";
@@ -26,6 +32,11 @@ const FloatingPlayPause = ({ nodes, edges }) => {
     c.download = "t.con.xml";
     c.click();
     URL.revokeObjectURL(urlConnections);
+    // const d = document.createElement("a");
+    // d.href = urlRoutes;
+    // d.download = "t.rou.xml";
+    // d.click();
+    // URL.revokeObjectURL(urlRoutes);
   };
 
   const generateXmlNodes = (nodes) => {
@@ -56,25 +67,10 @@ const FloatingPlayPause = ({ nodes, edges }) => {
     return xml;
   };
 
-  const generateXmlConnections = (edges) => {
+  const generateXmlConnections = (connections) => {
     // You can create your own XML structure here based on the nodes and edges data
     // For simplicity, I'll use a basic example
 
-    const connections = [];
-
-    for (let i = 0; i < edges.length; i++) {
-      for (let j = 0; j < edges.length; j++) {
-        if (edges[i].to === edges[j].from) {
-          const from = edges[i].id;
-          const to = edges[j].id;
-          const fromLane = 0;
-          const toLane = 0;
-    
-          connections.push({ from, to, fromLane, toLane });
-        }
-      }
-    }
-    
     const xmlConnections = connections.map(
       (connection) =>
         `<connection from="${connection.from}" to="${connection.to}" fromLane="${connection.fromLane}" toLane="${connection.toLane}" />`
@@ -89,6 +85,27 @@ const FloatingPlayPause = ({ nodes, edges }) => {
 
     return xml;
   };
+
+//   const generateXmlRoutes = (connections) => {
+//     // You can create your own XML structure here based on the nodes and edges data
+//     // For simplicity, I'll use a basic example
+    
+//     const xmlVType = vTypes.map( (vType) => '<vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="70"/>');
+//     const xmlRoutes = connections.map(
+//       (connection) =>
+//         `<route id="${connection.from+connection.to}" edges="${connection.from + ' ' + connection.to}" />`
+//     );
+//     // const xmlFlow = 
+
+
+//     const xml = `
+//       <routes>
+//         ${xmlConnections.join("\n")}
+//       </routes>
+//     `;
+
+//     return xml;
+//   };
 
   return (
     <div
