@@ -2,27 +2,47 @@ import React from "react";
 
 const FloatingPlayPause = ({ nodes, edges }) => {
   const handleDownload = () => {
-    const xmlContent = generateXml(nodes, edges);
-    const blob = new Blob([xmlContent], { type: "application/xml" });
-    const url = URL.createObjectURL(blob);
+    const xmlContentNodes = generateXmlNodes(nodes);
+    const xmlContentEdges = generateXmlEdges(edges);
+    const blobNodes = new Blob([xmlContentNodes], { type: "application/xml" });
+    const blobEdges = new Blob([xmlContentEdges], { type: "application/xml" });
+    const urlNodes = URL.createObjectURL(blobNodes);
+    const urlEdges = URL.createObjectURL(blobEdges);
     const a = document.createElement("a");
-    a.href = url;
-    a.download = "network_data.xml";
+    a.href = urlNodes;
+    a.download = "t.nod.xml";
     a.click();
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(urlNodes);
+    const b = document.createElement("a");
+    b.href = urlEdges;
+    b.download = "t.edg.xml";
+    b.click();
+    URL.revokeObjectURL(urlEdges);
   };
 
-  const generateXml = (nodes, edges) => {
+  const generateXmlNodes = (nodes) => {
     // You can create your own XML structure here based on the nodes and edges data
     // For simplicity, I'll use a basic example
-    const xmlNodes = nodes.map((node) => `<Node id="${node.id}" x="${node.x}" y="${node.y}" type="${node.type}" />`);
-    const xmlEdges = edges.map((edge) => `<Edge id="${edge.id}" from="${edge.from}" to="${edge.to}" priority="${edge.priority}" numLanes="${edge.numLanes}" speed="${edge.speed}" />`);
+    const xmlNodes = nodes.map((node) => `<node id="${node.id}" x="${node.x}" y="${node.y}" type="${node.type}" />`);
 
     const xml = `
-      <Network>
+      <nodes>
         ${xmlNodes.join("\n")}
+      </nodes>
+    `;
+
+    return xml;
+  };
+
+  const generateXmlEdges = (edges) => {
+    // You can create your own XML structure here based on the nodes and edges data
+    // For simplicity, I'll use a basic example
+    const xmlEdges = edges.map((edge) => `<edge id="${edge.id}" from="${edge.from}" to="${edge.to}" priority="${edge.priority}" numLanes="${edge.numLanes}" speed="${edge.speed}" />`);
+
+    const xml = `
+      <edges>
         ${xmlEdges.join("\n")}
-      </Network>
+      </edges>
     `;
 
     return xml;
